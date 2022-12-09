@@ -71,12 +71,19 @@ fn draw_cell_info(
 }
 
 fn main() {
-    let mut window: PistonWindow = WindowSettings::new("MinesBooMer", [640, 480])
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
-
     let mut game = Game::new(Difficulty::Easy);
+    let size = game.board.get_size();
+    let mut window: PistonWindow = WindowSettings::new(
+        "MinesBooMer",
+        [
+            size.width as f64 * SIZE_FACTOR,
+            size.height as f64 * SIZE_FACTOR,
+        ],
+    )
+    .exit_on_esc(true)
+    .build()
+    .unwrap();
+
     let mut last_cursor_position: [f64; 2] = [0.0, 0.0];
 
     let font_path = "examples/assets/FiraSans-Medium.ttf";
