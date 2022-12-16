@@ -11,30 +11,21 @@ impl GameConfiguration {
     fn easy() -> GameConfiguration {
         GameConfiguration {
             mines_count: 11,
-            size: Size {
-                height: 10,
-                width: 10,
-            },
+            size: Size { height: 10, width: 10 },
         }
     }
 
     fn medium() -> GameConfiguration {
         GameConfiguration {
             mines_count: 41,
-            size: Size {
-                height: 16,
-                width: 16,
-            },
+            size: Size { height: 16, width: 16 },
         }
     }
 
     fn hard() -> GameConfiguration {
         GameConfiguration {
             mines_count: 99,
-            size: Size {
-                height: 16,
-                width: 30,
-            },
+            size: Size { height: 16, width: 30 },
         }
     }
 
@@ -68,6 +59,10 @@ impl Game {
         }
     }
 
+    pub fn get_board(&self) -> &Board {
+        &self.board
+    }
+
     pub fn remaining_mines(&self) -> u32 {
         let mut mines_count: u32 = 0;
         self.board.for_each_cell(|_, cell, _| {
@@ -88,10 +83,7 @@ impl Game {
             return;
         }
 
-        let new_cell = Cell {
-            flagged: !cell.flagged,
-            ..*cell
-        };
+        let new_cell = Cell { flagged: !cell.flagged, ..*cell };
         let mut m_cells = self.board.cells.clone();
         m_cells.replace_at(new_cell, cell.coordinates);
         self.board.cells = m_cells;
@@ -136,10 +128,7 @@ impl Game {
                         });
                     }
 
-                    let new_cell = Cell {
-                        cleared: true,
-                        ..*cell
-                    };
+                    let new_cell = Cell { cleared: true, ..*cell };
                     board.cells.replace_at(new_cell, cell.coordinates);
                 }
                 None => continue,
@@ -218,18 +207,12 @@ mod tests {
 
     #[test]
     fn test_clear_white_cells() {
-        let mut board = Board::new_empty(Size {
-            width: 5,
-            height: 5,
-        });
+        let mut board = Board::new_empty(Size { width: 5, height: 5 });
         let mine_coordinates = Point { x: 2, y: 2 };
         board.replace_cell(Cell::new_mine(mine_coordinates), mine_coordinates);
         board.add_cell_numbers();
 
-        let mut game = Game {
-            board,
-            total_mines: 1,
-        };
+        let mut game = Game { board, total_mines: 1 };
 
         game.selected_at(Point { x: 0, y: 4 });
 
