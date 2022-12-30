@@ -1,3 +1,5 @@
+use core::fmt;
+
 use crate::board::Board;
 use crate::cell::Cell;
 use crate::graphics::*;
@@ -29,7 +31,7 @@ impl GameConfiguration {
         }
     }
 
-    fn configuration_for(difficulty: Difficulty) -> GameConfiguration {
+    fn configuration_for(difficulty: &Difficulty) -> GameConfiguration {
         match difficulty {
             Difficulty::Easy => GameConfiguration::easy(),
             Difficulty::Medium => GameConfiguration::medium(),
@@ -38,24 +40,35 @@ impl GameConfiguration {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum Difficulty {
     Easy,
     Medium,
     Hard,
 }
 
+impl fmt::Display for Difficulty {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // write!(f, "{:?}", self)
+        // or, alternatively:
+        fmt::Debug::fmt(self, f)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Game {
     pub board: Board,
     pub total_mines: i32,
+    pub difficulty: Difficulty,
 }
 
 impl Game {
     pub fn new(difficulty: Difficulty) -> Game {
-        let config = GameConfiguration::configuration_for(difficulty);
+        let config = GameConfiguration::configuration_for(&difficulty);
         Game {
             board: Board::new(config.mines_count, config.size),
             total_mines: config.mines_count,
+            difficulty,
         }
     }
 
@@ -212,7 +225,11 @@ mod tests {
         board.replace_cell(Cell::new_mine(mine_coordinates), mine_coordinates);
         board.add_cell_numbers();
 
-        let mut game = Game { board, total_mines: 1 };
+        let mut game = Game {
+            board,
+            total_mines: 1,
+            difficulty: Difficulty::Easy,
+        };
 
         game.selected_at(Point { x: 0, y: 4 });
 
@@ -227,6 +244,12 @@ mod tests {
                 assert!(cell.cleared);
             }
         });
+    }
+
+    #[test]
+    fn test_difficulty_to_string() {
+        let diff = Difficulty::Easy;
+        assert_eq!(diff.to_string(), "Easy");
     }
 
     fn print_board(board: &Board) {
